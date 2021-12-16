@@ -4,6 +4,7 @@ import {
   CodePipelineSource,
   ShellStep,
 } from "@aws-cdk/pipelines";
+import { CdkpipelinesDemoStage } from "./cdkpipelines-demo-stage";
 
 /**
  * The stack that defines the application pipeline
@@ -19,7 +20,7 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
       // How it will be built and synthesized
       synth: new ShellStep("Synth", {
         // Where the source can be found
-        input: CodePipelineSource.gitHub("OWNER/REPO", "main"),
+        input: CodePipelineSource.gitHub("alemos-js/js-bootcamp-cdk-pipelines-intro", "main"),
 
         // Install dependencies, build and run cdk synth
         commands: ["npm ci", "npm run build", "npx cdk synth"],
@@ -27,6 +28,10 @@ export class CdkpipelinesDemoPipelineStack extends Stack {
     });
 
     // This is where we add the application stages
-    // ...
+    pipeline.addStage(
+      new CdkpipelinesDemoStage(this, "PreProd", {
+        env: { account: "ACCOUNT", region: "us-east-1" },
+      })
+    );
   }
 }
